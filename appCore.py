@@ -218,7 +218,7 @@ class BF3FunBotConfigFrame(ctk.CTkFrame):
                                                      text="New Server Config",
                                                      text_color="#FFFFFF",
                                                      height=30,
-                                                     width=205,
+                                                     width=225,
                                                      font=("Segoe UI", 14),
                                                      command=self.init_new_server_config,
                                                      state="enabled",
@@ -260,12 +260,80 @@ class BF3FunBotConfigFrame(ctk.CTkFrame):
 class NewBF3ServerConfigWindow(ctk.CTkToplevel):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.title("New Server Config")
-        self.geometry("800x600")
+        self.title("New BF3 Server Config")
+        self.geometry("1000x700")
         self.resizable(False, False)
         self.configure(bg="#2C2C2C")
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        with open("bf3-reference-settings/Config.json", "r") as file:
+            self.config_data = json.load(file)["Config"]
+
+
+        self.scrollable_frame = ctk.CTkScrollableFrame(self,
+                                                       fg_color="#2C2C2C",
+                                                       bg_color="#2C2C2C",
+                                                       width=950,
+                                                       height=650)
+        self.scrollable_frame.grid(row=0,
+                                   column=0,
+                                   padx=20,
+                                   pady=20,
+                                   sticky="nsew")
+        self.generate_config_elements()
+
+    def generate_config_elements(self):
+        for row, (key, value) in enumerate(self.config_data.items()):
+            # Label
+            label = ctk.CTkLabel(self.scrollable_frame, text=key, font=("Segoe UI", 14), text_color="#FFFFFF",
+                                 anchor="w")
+            label.grid(row=row, column=0, padx=20, pady=(5, 5), sticky="w")
+
+            if isinstance(value, bool):
+                option_menu = ctk.CTkOptionMenu(self.scrollable_frame, values=["True", "False"], fg_color="#3A3A3A",
+                                                text_color="#FFFFFF",
+                                                command=lambda v, k=key: self.update_config_value(k, v))
+                option_menu.set(str(value))
+                option_menu.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+
+            elif isinstance(value, (int, float)):
+                entry = ctk.CTkEntry(self.scrollable_frame, fg_color="#3A3A3A", text_color="#FFFFFF")
+                entry.insert(0, value)
+                entry.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                entry.bind("<FocusOut>", lambda e, k=key, widget=entry: self.update_numeric_value(k, widget))
+
+            elif isinstance(value, str):
+                entry = ctk.CTkEntry(self.scrollable_frame, fg_color="#3A3A3A", text_color="#FFFFFF")
+                entry.insert(0, value)
+                entry.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                entry.bind("<FocusOut>", lambda e, k=key, widget=entry: self.update_config_value(k, widget.get()))
+
+            else:
+                entry = ctk.CTkEntry(self.scrollable_frame, fg_color="#3A3A3A", text_color="#FFFFFF")
+                entry.insert(0, str(value))
+                entry.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                entry.bind("<FocusOut>", lambda e, k=key, widget=entry: self.update_config_value(k, widget.get()))
+
+    def update_config_value(self, key, value):
+        if isinstance(self.config_data[key], bool):
+            self.config_data[key] = value == "True"
+        else:
+            self.config_data[key] = value
+        print(f"{key} updated to {value}")
+
+    def update_numeric_value(self, key, widget):
+        try:
+            value = float(widget.get())
+            if isinstance(self.config_data[key], int):
+                value = int(value)
+            self.config_data[key] = value
+            print(f"{key} updated to {value}")
+        except ValueError:
+            print(f"Invalid input for {key}, resetting value.")
+            widget.delete(0, "end")
+            widget.insert(0, self.config_data[key])
+
 
 ##################MAP CONFIG FRAME
 class MapConfigOptionsTabFrame(ctk.CTkFrame):
@@ -293,7 +361,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         self.select_map = ctk.CTkOptionMenu(self,
                                             text_color="#FFFFFF",
                                             height=30,
-                                            width=205,
+                                            width=225,
                                             font=("Segoe UI", 14),
                                             values=[m['name'] for m in maps],
                                             command=self.update_compatible_modes,
@@ -324,7 +392,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         self.select_mode = ctk.CTkOptionMenu(self,
                                              text_color="#FFFFFF",
                                              height=30,
-                                             width=205,
+                                             width=225,
                                              font=("Segoe UI", 14),
                                              values=[m['name'] for m in modes],
                                              variable=selected_mode,
@@ -371,7 +439,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                                                      text="Add to Serverlist",
                                                      text_color="#FFFFFF",
                                                      height=30,
-                                                     width=205,
+                                                     width=225,
                                                      font=("Segoe UI", 14),
                                                      command=self.add_to_serverlist,
                                                      state="enabled",
@@ -380,15 +448,15 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         self.add_to_serverlist_button.grid(row=0,
                                         column=0,
                                         padx=25,
-                                        pady=215,
+                                        pady=225,
                                         sticky="nw",
                                         )
 
         self.remove_map_button = ctk.CTkButton(self,
-                                                     text="Remove last map from Serverlist",
+                                                     text="Remove last map from ServerList",
                                                      text_color="#FFFFFF",
                                                      height=30,
-                                                     width=205,
+                                                     width=225,
                                                      font=("Segoe UI", 14),
                                                      command=self.remove_from_serverlist,
                                                      state="enabled",
@@ -397,7 +465,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         self.remove_map_button.grid(row=0,
                                         column=0,
                                         padx=25,
-                                        pady=255,
+                                        pady=265,
                                         sticky="nw",
                                         )
 
@@ -405,7 +473,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                                                      text="Export to ServerList.txt",
                                                      text_color="#FFFFFF",
                                                      height=30,
-                                                     width=205,
+                                                     width=225,
                                                      font=("Segoe UI", 14),
                                                      command=self.export_to_file,
                                                      state="enabled",
@@ -414,7 +482,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         self.export_to_file_button.grid(row=0,
                                         column=0,
                                         padx=25,
-                                        pady=295,
+                                        pady=305,
                                         sticky="nw",
                                         )
 
@@ -422,7 +490,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                                                      text="Import from File",
                                                      text_color="#FFFFFF",
                                                      height=30,
-                                                     width=205,
+                                                     width=225,
                                                      font=("Segoe UI", 14),
                                                      command=self.load_map_file,
                                                      state="enabled",
@@ -431,7 +499,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         self.import_from_file_button.grid(row=0,
                                         column=0,
                                         padx=25,
-                                        pady=335,
+                                        pady=345,
                                         sticky="nw",
                                         )
 
