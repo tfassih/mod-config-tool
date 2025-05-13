@@ -145,6 +145,6 @@
     "DisableChatCommands": false,
     "DisableRCONCommands": false,
     "IgnorePermissions": false,
-    "Language": "nil"
+    "Language": "null"
   }
 }

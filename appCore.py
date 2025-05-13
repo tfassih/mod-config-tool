@@ -1,5 +1,5 @@
-from tkinter import StringVar, messagebox
-
+from tkinter import messagebox
+import json
 import customtkinter as ctk
 from PIL.ImageTk import PhotoImage
 
@@ -51,6 +51,7 @@ maps = [{"name": "Alborz Mountains", "mapID": "XP3_Alborz", "modes": [modes[2], 
         {"name": "Talah Market", "mapID": "XP4_Rubble", "modes": [modes[4], modes[8], modes[9], modes[10], modes[11], modes[12], modes[14], modes[15]]},
         {"name": "Tehran Highway", "mapID": "MP_003", "modes": [modes[2], modes[3], modes[8], modes[9], modes[11], modes[12], modes[14], modes[15]]},
         ]
+
 
 class AppCore(ctk.CTk):
     def __init__(self):
@@ -211,13 +212,15 @@ class MainContentTabView(ctk.CTkTabview):
 class BF3FunBotConfigFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        self.settings_definition = ""
+        self.bot_config_definition = ""
         self.new_server_config_button = ctk.CTkButton(self,
                                                      text="New Server Config",
                                                      text_color="#FFFFFF",
                                                      height=30,
                                                      width=205,
                                                      font=("Segoe UI", 14),
-                                                     #command=self.new_server_config,
+                                                     command=self.init_new_server_config,
                                                      state="enabled",
                                                       anchor="center"
                                                      )
@@ -227,7 +230,42 @@ class BF3FunBotConfigFrame(ctk.CTkFrame):
                                           pady=25,
                                           sticky="ew",
                                           )
+        self.new_server_config_window = None
 
+    def open_new_server_config_window(self):
+        if self.new_server_config_window is None or not self.new_server_config_window.winfo_exists():
+            self.new_server_config_window = NewBF3ServerConfigWindow(self)
+            self.new_server_config_window.grab_set()
+            self.new_server_config_window.focus_set()
+        else:
+            self.new_server_config_window.focus_set()
+
+    def init_new_server_config(self):
+        try:
+            with open("bf3-reference-settings/settings-definition.json", "r", encoding="utf-8") as f:
+                self.settings_definition = json.load(f)
+                f.close()
+        except Exception:
+            messagebox.showerror("Error", "Failed to load settings definition file.")
+        try:
+            with open("bf3-reference-settings/Config.json", "r", encoding="utf-8") as f:
+                self.bot_config_definition = json.load(f)
+                f.close()
+        except Exception:
+            messagebox.showerror("Error", "Failed to load bot config definition file.")
+
+        self.open_new_server_config_window()
+
+
+class NewBF3ServerConfigWindow(ctk.CTkToplevel):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.title("New Server Config")
+        self.geometry("800x600")
+        self.resizable(False, False)
+        self.configure(bg="#2C2C2C")
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
 ##################MAP CONFIG FRAME
 class MapConfigOptionsTabFrame(ctk.CTkFrame):
