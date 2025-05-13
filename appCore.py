@@ -470,16 +470,10 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
             ui_maplist.set(value=temp_s)
             w.mapList.update()
         ui_maplist.set(value=temp_s)
-        print("flag: " + temp_s)
-        print("flag2: " + ui_maplist.get())
+
         w.mapList.configure(textvariable=ui_maplist)
         w.mapList.configure(text=ui_maplist)
         w.mapList.update()
-
-
-        #print("t : " + w.mapList.cget("text"))
-        print(maplist.get())
-
 
 ##################Maplist Frame
 class MapConfigMaplistFrame(ctk.CTkFrame):
