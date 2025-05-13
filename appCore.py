@@ -81,8 +81,6 @@ class AppCore(ctk.CTk):
                                        column=0,
                                        sticky="nsew",
                                        )
-        # self.mapConfigMaplistTabFrame = ctk.CTkFrame(self, name="mapConfigMaplistTabFrame")
-        # self.mapConfigMaplistTabFrame.mapList = ctk.CTkLabel(self.mapConfigMaplistTabFrame, text="")
 
         self._set_appearance_mode("dark")
 
@@ -172,10 +170,10 @@ class MainContentTabView(ctk.CTkTabview):
 
         self.mapConfigMaplistTabFrame.grid(row=0,
                                            column=0,
-                                           ipady=195,
+                                           ipady=50,
                                            padx=25,
                                            pady=125,
-                                           sticky="e",
+                                           sticky="ne",
                                            )
 
         #####################SERVER CONFIG
@@ -283,7 +281,9 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                                            number_of_steps=10,
                                            command=self.update_rounds_label,
                                            )
+
         self.select_rounds.set(self.numRounds)
+
         self.select_rounds.grid(row=0,
                                 column=0,
                                 padx=25,
@@ -339,6 +339,23 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                                         column=0,
                                         padx=25,
                                         pady=295,
+                                        sticky="nw",
+                                        )
+
+        self.import_from_file_button = ctk.CTkButton(self,
+                                                     text="Import from File",
+                                                     text_color="#FFFFFF",
+                                                     height=30,
+                                                     width=205,
+                                                     font=("Segoe UI", 14),
+                                                     command=self.load_map_file,
+                                                     state="enabled",
+                                                     )
+
+        self.import_from_file_button.grid(row=0,
+                                        column=0,
+                                        padx=25,
+                                        pady=335,
                                         sticky="nw",
                                         )
 
@@ -414,6 +431,56 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                 f.close()
                 messagebox.showinfo("Success", "ServerList.txt has been exported successfully.")
 
+    def load_map_file(self):
+        global maplist
+        global ui_maplist
+        if not isinstance(ui_maplist, ctk.StringVar):
+            ui_maplist = ctk.StringVar(value="")
+        ui_maplist.set("")
+
+        with open("ServerList.txt", "r") as f:
+            maplist = f.read()
+            f.close()
+            messagebox.showinfo("Success", "ServerList.txt has been imported successfully.")
+        maplist = ctk.StringVar(value=maplist)
+        maplist.set(value=maplist.get())
+
+        temp_s = ""
+        imaplist = maplist.get().split("\n")
+        w = MapConfigMaplistFrame(self)
+
+        for i in imaplist:
+            if i == "":
+                continue
+            else:
+                ui_mapname = i.split(" ")[0]
+
+                ui_mapmode = i.split(" ")[1]
+
+                ui_maprounds = i.split(" ")[2]
+
+                try:
+                    if ui_mapname in [m['mapID'] for m in maps] and ui_mapmode in [m['modeID'] for m in modes] and ui_maprounds.isdigit():
+                        temp_s += "".join([s['name'] for s in maps if s['mapID'] == ui_mapname]).strip("[""]") + \
+                                        " --- " + "".join([s['name'] for s in modes if s['modeID'] == ui_mapmode]).strip("[""]") + \
+                                        " --- " + ui_maprounds + "\n"
+
+                except Exception:
+                    messagebox.showerror("Error", "Invalid Maplist File")
+            ui_maplist.set(value=temp_s)
+            w.mapList.update()
+        ui_maplist.set(value=temp_s)
+        print("flag: " + temp_s)
+        print("flag2: " + ui_maplist.get())
+        w.mapList.configure(textvariable=ui_maplist)
+        w.mapList.configure(text=ui_maplist)
+        w.mapList.update()
+
+
+        #print("t : " + w.mapList.cget("text"))
+        print(maplist.get())
+
+
 ##################Maplist Frame
 class MapConfigMaplistFrame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -444,7 +511,7 @@ class MapConfigMaplistFrame(ctk.CTkFrame):
         self.mapList = ctk.CTkLabel(self,
                                       font=("Segoe UI", 10),
                                       text_color="#FFFFFF",
-                                      height=450,
+                                      height=400,
                                       width=320,
                                       bg_color="#1E1E1E",
                                       fg_color="#2C2C2C",
@@ -457,12 +524,9 @@ class MapConfigMaplistFrame(ctk.CTkFrame):
                           column=0,
                           padx=25,
                           pady=100,
-                          sticky="new",
+                          ipadx=50,
+                          sticky="",
                           )
-
-
-
-
 
 
 app = AppCore()
