@@ -61,7 +61,7 @@ class AppCore(ctk.CTk):
         self.configure(bg="#2C2C2C")
         self.resizable(False, False)
         self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
         self.top_menu_frame = TopMenuFrame(self,
                                            fg_color="#1E1E1E",
@@ -72,14 +72,15 @@ class AppCore(ctk.CTk):
 
         self.top_menu_frame.grid(row=0,
                                  column=0,
-                                 rowspan=2,
+
                                  sticky="new",
                                  )
 
         self.main_content_tabview = MainContentTabView(self, fg_color="#2C2C2C", bg_color="#1E1E1E")
-        self.main_content_tabview.grid(row=2,
+        self.main_content_tabview.grid(row=0,
                                        column=0,
-                                       sticky="nsew",
+                                       sticky="ewn",
+                                       pady=95,
                                        )
 
         self._set_appearance_mode("dark")
@@ -97,13 +98,14 @@ class TopMenuFrame(ctk.CTkFrame):
                                               width=50,
                                               bg_color="#1E1E1E",
                                               fg_color="transparent",
+                                              anchor="left"
                                               )
 
         self.menu_icon_button.grid(row=0,
                                    column=0,
-                                   rowspan=2,
+                                   pady=25,
                                    padx=15,
-                                   sticky="w",
+                                   sticky="nw",
                                    )
 
         self.top_menu_title_label = ctk.CTkLabel(master=master,
@@ -111,6 +113,7 @@ class TopMenuFrame(ctk.CTkFrame):
                                                  font=("Segoe UI", 32),
                                                  fg_color="#1E1E1E",
                                                  text_color="#FFFFFF",
+                                                 anchor="center"
                                                  )
 
         self.top_menu_title_label.grid(row=0,
@@ -140,7 +143,7 @@ class MainContentTabView(ctk.CTkTabview):
                                      column=0,
                                      padx=250,
                                      pady=15,
-                                     sticky="new",
+                                     sticky="n",
                                      )
 
         self.mapConfigOptionsTabFrame = MapConfigOptionsTabFrame(self.tab("Map Config"),
@@ -153,10 +156,10 @@ class MainContentTabView(ctk.CTkTabview):
 
         self.mapConfigOptionsTabFrame.grid(row=0,
                                            column=0,
-                                           ipady=275,
+                                           ipady=100,
                                            ipadx=75,
                                            padx=25,
-                                           pady=125,
+                                           pady=100,
                                            sticky="w",
                                            )
 
@@ -172,23 +175,58 @@ class MainContentTabView(ctk.CTkTabview):
                                            column=0,
                                            ipady=50,
                                            padx=25,
-                                           pady=125,
+                                           pady=100,
                                            sticky="ne",
                                            )
 
         #####################SERVER CONFIG
         self.serverConfigMainLabel = ctk.CTkLabel(master=self.tab("Server Config"),
-                                                  text="BF3 Server Configuration Tool (COMING SOON)",
+                                                  text="BF3 Server Fun-Bot Configuration Tool (WIP/NON-FUNCTIONAL)",
                                                   font=("Segoe UI", 24),
                                                   text_color="#FFFFFF",
+                                                  anchor="center"
                                                   )
 
         self.serverConfigMainLabel.grid(row=0,
                                         column=0,
-                                        padx=175,
-                                        pady=15,
-                                        sticky="new",
+                                        #ipady=50,
+                                        padx=95,
+                                        pady=100,
+                                        sticky="n",
                                         )
+        self.serverConfigFrame = BF3FunBotConfigFrame(self.tab("Server Config"),
+                                                      fg_color="#1E1E1E",
+                                                      bg_color="#1E1E1E",
+                                                      width=320,
+                                                      height=450,
+                                                      border_width=1,
+                                                      )
+        self.serverConfigFrame.grid(row=0,
+                                   column=0,
+                                   padx=25,
+                                   pady=200,
+                                   sticky="n",
+                                   )
+
+class BF3FunBotConfigFrame(ctk.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.new_server_config_button = ctk.CTkButton(self,
+                                                     text="New Server Config",
+                                                     text_color="#FFFFFF",
+                                                     height=30,
+                                                     width=205,
+                                                     font=("Segoe UI", 14),
+                                                     #command=self.new_server_config,
+                                                     state="enabled",
+                                                      anchor="center"
+                                                     )
+        self.new_server_config_button.grid(row=0,
+                                          column=0,
+                                          padx=25,
+                                          pady=25,
+                                          sticky="ew",
+                                          )
 
 
 ##################MAP CONFIG FRAME
