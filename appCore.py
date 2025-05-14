@@ -538,7 +538,7 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
                                         )
 
         self.export_to_file_button = ctk.CTkButton(self,
-                                                     text="Export to ServerList.txt",
+                                                     text="Export to MapList.txt",
                                                      text_color="#FFFFFF",
                                                      height=30,
                                                      width=225,
@@ -638,10 +638,10 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
         if maplist.get() == "":
             return
         else:
-            with open("ServerList.txt", "w") as f:
+            with open("MapList.txt", "w") as f:
                 f.write(maplist.get())
                 f.close()
-                messagebox.showinfo("Success", "ServerList.txt has been exported successfully.")
+                messagebox.showinfo("Success", "MapList.txt has been exported successfully.")
 
     def load_map_file(self):
         global maplist
@@ -650,10 +650,10 @@ class MapConfigOptionsTabFrame(ctk.CTkFrame):
             ui_maplist = ctk.StringVar(value="")
         ui_maplist.set("")
 
-        with open("ServerList.txt", "r") as f:
+        with open("MapList.txt", "r") as f:
             maplist = f.read()
             f.close()
-            messagebox.showinfo("Success", "ServerList.txt has been imported successfully.")
+            messagebox.showinfo("Success", "MapList.txt has been imported successfully.")
         maplist = ctk.StringVar(value=maplist)
         maplist.set(value=maplist.get())
 
