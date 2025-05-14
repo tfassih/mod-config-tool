@@ -2,6 +2,7 @@ from tkinter import messagebox
 import json
 import customtkinter as ctk
 from PIL.ImageTk import PhotoImage
+import os
 
 maplist = ""
 ui_maplist = ""
@@ -257,6 +258,9 @@ class BF3FunBotConfigFrame(ctk.CTkFrame):
         self.open_new_server_config_window()
 
 
+
+
+
 class NewBF3ServerConfigWindow(ctk.CTkToplevel):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -264,75 +268,137 @@ class NewBF3ServerConfigWindow(ctk.CTkToplevel):
         self.geometry("1000x700")
         self.resizable(False, False)
         self.configure(bg="#2C2C2C")
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure((0, 1), weight=1)  # Configure two columns
 
+        # Load Config JSON
         with open("bf3-reference-settings/Config.json", "r") as file:
             self.config_data = json.load(file)["Config"]
 
+        # Create a scrollable frame
+        self.scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="#2C2C2C", width=950, height=650)
+        self.scrollable_frame.grid(row=1, column=0, padx=20, pady=20, columnspan=2, sticky="nsew")
 
-        self.scrollable_frame = ctk.CTkScrollableFrame(self,
-                                                       fg_color="#2C2C2C",
-                                                       bg_color="#2C2C2C",
-                                                       width=950,
-                                                       height=650)
-        self.scrollable_frame.grid(row=0,
-                                   column=0,
-                                   padx=20,
-                                   pady=20,
-                                   sticky="nsew")
+        # Add export button
+        self.export_button = ctk.CTkButton(
+            self,
+            text="Export Config",
+            text_color="#FFFFFF",
+            font=("Segoe UI", 14),
+            height=30,
+            width=200,
+            fg_color="#3A3A3A",
+            command=self.export_to_files
+        )
+        self.export_button.grid(row=0, column=1, padx=20, pady=10, sticky="ne")  # Position at the top-right corner
+
+        # Generate labels and dropdowns for each config entry
         self.generate_config_elements()
 
     def generate_config_elements(self):
-        for row, (key, value) in enumerate(self.config_data.items()):
+        """Generate a label and dropdown/entry field for each key in the config."""
+        column_count = 2  # Number of columns
+        row, column = 0, 0  # Initialize row and column
+
+        for key, value in self.config_data.items():
             # Label
-            label = ctk.CTkLabel(self.scrollable_frame, text=key, font=("Segoe UI", 14), text_color="#FFFFFF",
-                                 anchor="w")
-            label.grid(row=row, column=0, padx=20, pady=(5, 5), sticky="w")
+            label = ctk.CTkLabel(self.scrollable_frame, text=key, font=("Segoe UI", 14), text_color="#FFFFFF", anchor="w")
+            label.grid(row=row, column=column * 2, padx=10, pady=5, sticky="w")  # Use even column for labels
 
-            if isinstance(value, bool):
-                option_menu = ctk.CTkOptionMenu(self.scrollable_frame, values=["True", "False"], fg_color="#3A3A3A",
-                                                text_color="#FFFFFF",
+            # Dropdown or Entry
+            if isinstance(value, bool):  # Boolean fields as dropdowns
+                option_menu = ctk.CTkOptionMenu(self.scrollable_frame, values=["True", "False"], fg_color="#3A3A3A", text_color="#FFFFFF",
                                                 command=lambda v, k=key: self.update_config_value(k, v))
-                option_menu.set(str(value))
-                option_menu.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                option_menu.set(str(value))  # Set the initial value
+                option_menu.grid(row=row, column=column * 2 + 1, padx=10, pady=5, sticky="e")  # Use odd column for inputs
 
-            elif isinstance(value, (int, float)):
+            elif isinstance(value, (int, float)):  # Numeric fields as entry widgets
                 entry = ctk.CTkEntry(self.scrollable_frame, fg_color="#3A3A3A", text_color="#FFFFFF")
-                entry.insert(0, value)
-                entry.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                entry.insert(0, value)  # Set the initial value
+                entry.grid(row=row, column=column * 2 + 1, padx=10, pady=5, sticky="e")
                 entry.bind("<FocusOut>", lambda e, k=key, widget=entry: self.update_numeric_value(k, widget))
 
-            elif isinstance(value, str):
+            elif isinstance(value, str):  # Strings as Entry widgets
                 entry = ctk.CTkEntry(self.scrollable_frame, fg_color="#3A3A3A", text_color="#FFFFFF")
-                entry.insert(0, value)
-                entry.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                entry.insert(0, value)  # Set the initial value
+                entry.grid(row=row, column=column * 2 + 1, padx=10, pady=5, sticky="e")
                 entry.bind("<FocusOut>", lambda e, k=key, widget=entry: self.update_config_value(k, widget.get()))
 
-            else:
+            else:  # Other types use a generic text field
                 entry = ctk.CTkEntry(self.scrollable_frame, fg_color="#3A3A3A", text_color="#FFFFFF")
-                entry.insert(0, str(value))
-                entry.grid(row=row, column=1, padx=20, pady=(5, 5), sticky="e")
+                entry.insert(0, str(value))  # Set the initial value
+                entry.grid(row=row, column=column * 2 + 1, padx=10, pady=5, sticky="e")
                 entry.bind("<FocusOut>", lambda e, k=key, widget=entry: self.update_config_value(k, widget.get()))
+
+            # Update row and column for two columns
+            column += 1
+            if column >= column_count:  # Move to the next row after two entries
+                row += 1
+                column = 0
 
     def update_config_value(self, key, value):
-        if isinstance(self.config_data[key], bool):
+        """Update the config dictionary with the new value."""
+        if isinstance(self.config_data[key], bool):  # Handle boolean conversion
             self.config_data[key] = value == "True"
         else:
             self.config_data[key] = value
         print(f"{key} updated to {value}")
 
     def update_numeric_value(self, key, widget):
+        """Update numeric config values and validate input."""
         try:
             value = float(widget.get())
-            if isinstance(self.config_data[key], int):
+            if isinstance(self.config_data[key], int):  # Preserve integer type
                 value = int(value)
             self.config_data[key] = value
             print(f"{key} updated to {value}")
         except ValueError:
             print(f"Invalid input for {key}, resetting value.")
             widget.delete(0, "end")
-            widget.insert(0, self.config_data[key])
+            widget.insert(0, self.config_data[key])  # Reset to previous value
+
+    def export_to_files(self):
+        """Export the current config data to JSON and Lua files."""
+        # Step 1: Export as JSON
+        export_dir = "user-generated/fun-bot config"
+        lua_export_dir = os.path.join(export_dir, "lua")
+        os.makedirs(export_dir, exist_ok=True)  # Create directories if they don't exist
+        os.makedirs(lua_export_dir, exist_ok=True)
+
+        json_file_path = os.path.join(export_dir, "Config.json")
+        lua_file_path = os.path.join(lua_export_dir, "Config.lua")
+
+        try:
+            # Save as JSON
+            with open(json_file_path, "w", encoding="utf-8") as json_file:
+                json.dump({"Config": self.config_data}, json_file, indent=4)
+
+            # Save as Lua
+            lua_content = self.convert_to_lua_format(self.config_data)
+            with open(lua_file_path, "w", encoding="utf-8") as lua_file:
+                lua_file.write(lua_content)
+
+            messagebox.showinfo("Export Successful", f"Configuration exported to:\n{json_file_path}\nand\n{lua_file_path}")
+        except Exception as e:
+            messagebox.showerror("Export Failed", f"Failed to export configuration:\n{str(e)}")
+
+    def convert_to_lua_format(self, config_data):
+        """Convert JSON config data to Lua format."""
+        lua_lines = [
+            "-- This file is autogenerated. Changes made here might be overwritten.\n\n",
+            "@class Config\n",
+            "Config = {\n"
+        ]
+
+        for key, value in config_data.items():
+            if isinstance(value, str) and value not in ["true", "false"]:  # Format strings
+                lua_lines.append(f"\t{key} = \"{value}\",\n")
+            elif isinstance(value, bool):  # Format booleans
+                lua_lines.append(f"\t{key} = {'true' if value else 'false'},\n")
+            else:  # Format other types (numbers, etc.)
+                lua_lines.append(f"\t{key} = {value},\n")
+
+        lua_lines.append("}\n")
+        return "".join(lua_lines)
 
 
 ##################MAP CONFIG FRAME
