@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4be0b389-f837-4c80-9be9-fdd8f2b403c3" name="Changes" comment="fixed json to lua conversion from null to nil">
+    <list default="true" id="4be0b389-f837-4c80-9be9-fdd8f2b403c3" name="Changes" comment="minor fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/appCore.py" beforeDir="false" afterPath="$PROJECT_DIR$/appCore.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bf3-reference-settings/settings-definition.json" beforeDir="false" afterPath="$PROJECT_DIR$/bf3-reference-settings/settings-definition.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +87,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1746932168686</updated>
-      <workItem from="1746932169728" duration="92067000" />
+      <workItem from="1746932169728" duration="98788000" />
     </task>
     <task id="LOCAL-00001" summary="finished main functionality">
       <option name="closed" value="true" />
@@ -160,7 +161,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747202830968</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="minor fix">
+      <option name="closed" value="true" />
+      <created>1747216021234</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1747216021234</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -176,11 +185,12 @@
     <MESSAGE value="can now load fun-bot server reference files" />
     <MESSAGE value="can now export fun-bot config to both json and lua formats" />
     <MESSAGE value="fixed json to lua conversion from null to nil" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed json to lua conversion from null to nil" />
+    <MESSAGE value="minor fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor fix" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/mod_config_tool$frame_1.coverage" NAME="frame_1 Coverage Results" MODIFIED="1746932258552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/mod_config_tool$frame_2.coverage" NAME="frame_2 Coverage Results" MODIFIED="1746932279508" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/mod_config_tool$appCore.coverage" NAME="appCore Coverage Results" MODIFIED="1747215478228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/mod_config_tool$appCore.coverage" NAME="appCore Coverage Results" MODIFIED="1747277545641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
